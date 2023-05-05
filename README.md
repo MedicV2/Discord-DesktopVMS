@@ -34,9 +34,9 @@ npm install
 ## Usage
 
 1. Run the application:
-\`\`\`
+```
 node script.js
-\`\`\`
+```
 
 2. Follow the prompts to either upload a custom audio file or record microphone audio.
 
