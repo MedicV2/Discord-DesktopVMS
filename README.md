@@ -13,21 +13,26 @@ Unlock the power of voice messaging on Discord's desktop app! This project enabl
 
 ## Setup
 
-1. Navigate to the project folder:
+1. Clone this repository:
+```
+git clone https://github.com/MedicV2/Discord-Desktop-VMS.git
+```
+
+2. Navigate to the project folder:
 ```
 cd discord-desktop-voice
 ```
 
-2. Install the necessary dependencies:
+3. Install the necessary dependencies:
 ```
 npm install
 ```
 
-3. Set up your authentication token:
+4. Set up your authentication token:
     - Open the `auth.json` file.
     - Replace the `token` value with your Discord authentication token.
 
-4. Configure the target channel:
+5. Configure the target channel:
     - Open the `config.json` file.
     - Replace the `channelURL` value with a message URL from the DM or server channel where you want to send the voice message.
 
@@ -45,5 +50,3 @@ node script.js
 Enjoy the convenience of sending voice messages on Discord's desktop app!
 
 ---
-
-This README provides a brief overview of the project, its requirements, setup instructions, and usage guidelines.
