@@ -14,14 +14,14 @@ Unlock the power of voice messaging on Discord's desktop app! This project enabl
 ## Setup
 
 1. Navigate to the project folder:
-\`\`\`
+```
 cd discord-desktop-voice
-\`\`\`
+```
 
 2. Install the necessary dependencies:
-\`\`\`
+```
 npm install
-\`\`\`
+```
 
 3. Set up your authentication token:
     - Open the `auth.json` file.
