@@ -78,4 +78,4 @@ getNormalizedAmplitudes('../vms/customaudio/voice-message.ogg', 89)
   })
   .catch(err => console.error(err));
 
-  //Scuffed version of calculating the waveform data, trying to perfect it.
+  //Scuffed version of calculating the waveform data, trying to make it more accurate.
