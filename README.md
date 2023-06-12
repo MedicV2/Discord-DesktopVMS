@@ -36,6 +36,11 @@ npm install
     - Open the `config.json` file.
     - Replace the `channelURL` value with a message URL from the DM or server channel where you want to send the voice message.
 
+6. Install the required npm packages:
+```
+npm install fs path fluent-ffmpeg wav-decoder wavefile waveform-util child_process node-mic-record keypress axios
+```
+
 ## Usage
 
 1. Run the application:
