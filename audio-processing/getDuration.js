@@ -1,8 +1,18 @@
-const { getAudioDurationInSeconds } = require('get-audio-duration');
+const ffmpeg = require('fluent-ffmpeg');
 
-async function getDuration(filePath) {
-  const duration = await getAudioDurationInSeconds(filePath);
-  return duration;
+function getDuration(filePath) {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (error, metadata) => {
+      if (error) {
+        console.error(`Error reading metadata: ${error.message}`);
+        reject(error);
+      }
+
+      const duration = metadata.format.duration.toFixed(2);
+      console.log(duration);
+      resolve(duration);
+    });
+  });
 }
 
 module.exports = getDuration;
