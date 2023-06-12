@@ -2,21 +2,22 @@ const record = require('node-mic-record');
 const keypress = require('keypress');
 const fs = require('fs');
 const path = require('path');
+const { exec } = require('child_process');
 const logWithColor = require('../utils/consoleUtils');
 
 module.exports = function recordAudio() {
   return new Promise((resolve, reject) => {
-    //check if direcotry exists otherwise creates it
-    const vmsDir = './vms'; 
+    // Check if directory exists; otherwise, create it
+    const vmsDir = './vms';
     if (!fs.existsSync(vmsDir)) {
       fs.mkdirSync(vmsDir);
     }
 
-    //adding an index to the base filename
+    // Function to generate unique filenames
     const generateUniqueFilename = (filename, index) => {
       const ext = path.extname(filename);
       const base = path.basename(filename, ext);
-      return `${base}-${index}${ext}`; 
+      return `${base}-${index}${ext}`;
     };
 
     const outputFile = path.join(vmsDir, 'voice-message.wav'); // Output file path for the voice message
@@ -28,33 +29,54 @@ module.exports = function recordAudio() {
       finalOutputFile = path.join(vmsDir, generateUniqueFilename('voice-message.wav', fileIndex)); // Generate a unique output file path if a file with the same name already exists
     }
 
-    //stream for writing audio data to the output file
-    const fileStream = fs.createWriteStream(finalOutputFile, { encoding: 'binary' }); 
+    const tempFile = path.join(vmsDir, 'temp.wav'); // Temporary file path for audio processing
 
     let startTime;
+    const recordedData = [];
 
     logWithColor(`\nPress [Space bar] to stop recording`, 35);
-    logWithColor('Recording started...', 35); 
-    //start recording audio and pipe the audio data to the file stream for writing
+    logWithColor('Recording started...', 35);
+
+    // Start recording audio
     const recording = record.start({
       sampleRate: 48000,
       channels: 2,
-    }).pipe(fileStream);
+    });
+
+    recording.on('data', (data) => {
+      recordedData.push(data); // Collect the recorded data in memory
+    });
 
     const stopRecording = () => {
       logWithColor('\nStopping recording...', 31);
       record.stop();
-      fileStream.end(() => {
-        //resolve the promise with the path of the saved recording
-        logWithColor('Recording saved to:', 32);
-        logWithColor(finalOutputFile + '\n', 33);
-        resolve(finalOutputFile); 
+      recording.on('close', () => {
+        // Write the recorded data to the temporary file
+        fs.writeFile(tempFile, Buffer.concat(recordedData), (error) => {
+          if (error) {
+            console.error(`Error writing temporary file: ${error.message}`);
+            reject(error);
+            return;
+          }
+          // Execute sox command to enhance audio and remove noise
+          exec(`sox ${tempFile} ${finalOutputFile} highpass 100 lowpass 15000`, (error) => {
+            if (error) {
+              console.error(`Error enhancing audio: ${error.message}`);
+              reject(error);
+            } else {
+              // Remove the temporary file
+              fs.unlinkSync(tempFile);
+              // Resolve the promise with the path of the saved recording
+              logWithColor('Recording saved to:', 32);
+              logWithColor(finalOutputFile + '\n', 33);
+              resolve(finalOutputFile);
+            }
+          });
+        });
       });
     };
 
-
-
-    //A bunch of stuff to be able to log the elapsed time nicely -.-
+    // A bunch of stuff to be able to log the elapsed time nicely -.-
     const displayElapsedTime = () => {
       const currentTime = Math.floor((Date.now() - startTime) / 1000);
       process.stdout.clearLine(); // Clear the current line in the console output
@@ -62,18 +84,18 @@ module.exports = function recordAudio() {
       process.stdout.write(`\x1b[33mElapsed Time: ${currentTime} seconds\x1b[0m`);
     };
 
-    keypress(process.stdin); 
+    keypress(process.stdin);
     process.stdin.on('keypress', (ch, key) => {
       if (key && key.name === 'space') {
         clearInterval(elapsedTimeInterval);
         stopRecording();
       }
     });
-    
-    process.stdin.setRawMode(true); 
+
+    process.stdin.setRawMode(true);
     process.stdin.resume();
 
-    //Get start time and update time displayed.
+    // Get start time and update time displayed
     startTime = Date.now();
     const elapsedTimeInterval = setInterval(displayElapsedTime, 1000); // Update the displayed elapsed time every second
   });
