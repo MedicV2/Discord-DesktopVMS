@@ -6,6 +6,9 @@ const configData = require('./config/config.json');
 const recordAudio = require('./audio-processing/microphoneRecorder');
 const getDuration = require('./audio-processing/getDuration');
 const logWithColor = require('./utils/consoleUtils');
+const calculateWaveform = require('./audio-processing/waveform');
+const wavefile = require('wavefile');
+const waveform = require('waveform-util');
 
 //Get channelID from url
 const channelURL = configData.channelURL;
@@ -28,15 +31,20 @@ async function sendAudioFile(audioFilePath, fileDirectory) {
     const duration = await getDuration(audioFilePath);
     logWithColor('Audio duration: ' + duration + 's\n', 36);
 
-    //Upload audio file
-    logWithColor('Step 2: Uploading audio file...', 35);
+    // Calculate waveform
+    logWithColor('Step 2: Calculating waveform...', 35);
+    const waveform = await calculateWaveform(audioFilePath);
+    logWithColor('Waveform calculated.', 36);
+
+    // Upload audio file
+    logWithColor('Step 3: Uploading audio file...', 35);
     const uploadFilename = await sendFile(audioFilePath, fileDirectory);
     logWithColor('Uploaded filename:', 36);
     logWithColor(uploadFilename + '\n', 36);
 
-    //Send file to Discord
-    logWithColor('Step 3: Sending file to Discord...', 35);
-    await sendDiscordMessage(uploadFilename, duration);
+    // Send file to Discord
+    logWithColor('Step 4: Sending file to Discord...', 35);
+    await sendDiscordMessage(uploadFilename, duration, waveform);
 }
 
 //Function to generate random nonce
@@ -46,7 +54,7 @@ function generateNonce() {
 }
 
 //Send the actual message to discord
-async function sendDiscordMessage(uploadFilename, duration) {
+async function sendDiscordMessage(uploadFilename, duration, waveform) {
     const axios = require('axios');
     const auth = require('./config/auth.json');
 
@@ -70,7 +78,7 @@ async function sendDiscordMessage(uploadFilename, duration) {
             "filename": uploadFilename.split('/').pop(),
             "uploaded_filename": uploadFilename,// using the uploaded_filename obtained from handleUpload.js which will be the audio file that is sent
             "duration_secs": duration,//is needed to display the right duration in vms
-            "waveform": "AMW5wry7s624sra8vr7CrZKvsI6xr51dPw==" //Waveform data not yet figured out so just using a random waveform as preset
+            "waveform": waveform //Waveform data not yet figured out so just using a random waveform as preset
         }],
         "nonce": nonce
     };
