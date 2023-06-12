@@ -53,18 +53,18 @@ node script.js
 3. The voice message will be sent to the specified channel.
 
 
- * IMPORTANT: USE AT YOUR OWN RISK
- * 
- * DISCLAIMER: This tool is provided "as is" without any warranty. The developer
- * assumes no responsibility for any consequences resulting from the use of this tool.
- * 
- * This tool was created as a personal project to gain experience and is not affiliated
- * with or endorsed by Discord. Please be aware that using this tool may violate the
- * terms of service of Discord and could potentially result in the suspension or
- * termination of your account.
- * 
- * By using this tool, you acknowledge and accept all risks associated with its usage.
- * 
- * Please proceed with caution.
+ ## IMPORTANT: USE AT YOUR OWN RISK
+  
+ ##  DISCLAIMER: This tool is provided "as is" without any warranty. The developer
+ ## assumes no responsibility for any consequences resulting from the use of this tool.
+  
+ ## This tool was created as a personal project to gain experience and is not affiliated
+ ## with or endorsed by Discord. Please be aware that using this tool may violate the
+ ## terms of service of Discord and could potentially result in the suspension or
+ ## termination of your account.
+ ## 
+ ## By using this tool, you acknowledge and accept all risks associated with its usage.
+  
+ ## Please proceed with caution.
 
 ---
